@@ -1,0 +1,62 @@
+:root  {
+  --main-bg-color: #3481B8;
+}
+
+
+.a_link_card{
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    color: black;
+}
+
+
+
+.a_link_card:hover {
+    background: #3481B8;
+    color: white;
+    transition: transform 500ms ease;
+}
+
+.card_image {
+    min-height: 286px;
+    max-height: 286px;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+border_img {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+ul.breadcrumb {
+  padding: 10px 16px;
+  list-style: none;
+  background-color: #eee;
+}
+
+ul.breadcrumb li {
+  display: inline;
+  font-size: 18px;
+}
+ul.breadcrumb li+li:before {
+  padding: 8px;
+  color: black;
+  content: "|\00a0";
+}
+ul.breadcrumb li a {
+
+  color: black;
+  text-decoration: none;
+}
+
+ul.breadcrumb li a:hover {
+  text-decoration: none;
+  color: var(--main-bg-color);
+
+}
+.card span {
+    border-top: 1px solid rgba(0,0,0,.125);
+}
+
+.card span s {
+    color:grey;
+}

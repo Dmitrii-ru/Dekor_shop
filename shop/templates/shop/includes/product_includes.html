@@ -1,0 +1,18 @@
+<div class="d-flex justify-content-center d-flex flex-wrap">
+    {% for product in products %}
+    <div class="card m-2 " style="width: 18rem;">
+        <img src="{{product.image.url}}" class="card_image"  style="border-bottom: 1px solid rgba(0,0,0,.125);">
+        <a href="{% url 'shop:product' category.slug group.slug product.slug %}" class="d-flex align-items-center a_link_card" style="">
+            <div class="card-body" >
+                <p class="card-text  text-center" >{{ product.site_name }}</p>
+            </div>
+        </a>
+            <span class="card-text  text-center p-1 " >
+                {% if product.promo_group %}
+                <s class="m-1" style=""> {{ product.old_price }} ₽ </s>
+                {% endif %}
+                {{product.price}} ₽
+            </span>
+    </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,28 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %} {{category.site_name}} {% endblock %}
+{%block context%}
+<link rel="stylesheet" href="{% static 'shop/css/list_items.css' %}">
+
+
+<ul class="breadcrumb">
+    <li><a href="{% url 'shop:categories'%}">Каталог</a></li>
+    <li>{{category.site_name}}</li>
+</ul>
+
+
+<div class="d-flex justify-content-center d-flex flex-wrap">
+    {% for group in groups %}
+    <div class="card m-2 " style="width: 18rem;">
+        <img src="/media/image_default/default.png" class="card-img-top" alt="..." style="border-bottom: 1px solid rgba(0,0,0,.125);">
+        <a href="{% url 'shop:products' category.slug group.slug %}" class="d-flex align-items-center a_link_card" style="">
+            <div class="card-body" style="">
+                <p class="card-text  text-center" >{{ group.site_name }}</p>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{%endblock%}

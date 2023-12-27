@@ -1,0 +1,57 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %} {{product.site_name}} {% endblock %}
+{%block context%}
+<link rel="stylesheet" href="{% static 'shop/css/list_items.css' %}">
+
+
+<ul class="breadcrumb">
+    <li><a href="{% url 'shop:categories'%}">Каталог</a></li>
+    <li><a href="{% url 'shop:groups' product.group.category.slug %}">{{product.group.category.site_name}}</a></li>
+    <li><a href="{% url 'shop:products' product.group.category.slug  product.group.slug %}">{{product.group.site_name}}</a></li>
+    <li>{{product.site_name}}</li>
+</ul>
+
+{% if  product.is_active %}
+    <div class="d-flex justify-content-center d-flex flex-wrap">
+      <div class="card" style="width: 40rem;">
+        <img src="{{product.image.url}}" class="card-img-top" alt="Фото">
+        <div class="card-body">
+          <h5 class="card-title">{{product.site_name}}</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Артикул: {{product.art}}</li>
+
+          <li class="list-group-item">
+              Цена:
+              {% if product.promo_group %}
+                <s class="m-1" style="color:grey;"> {{ product.old_price }} ₽ </s>
+              {% endif %}
+              {{product.price}} ₽
+          </li>
+
+          <li class="list-group-item">Наличие: {{product.get_stock_display}}.</li>
+          <li class="list-group-item">Ед. изм.: {{product.unit}}</li>
+        </ul>
+        <div class="card-body">
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+    </div>
+    {% if images %}
+      <div class="d-flex justify-content-center d-flex flex-wrap border-top mt-2">
+        {%for img in images%}
+            <img src="{{img.image.url}}" class="rounded float-right m-1 " style="width: 18rem;" alt="Фото">
+        {% endfor %}
+      </div>
+    {%endif%}
+{% else %}
+    <div class="p-5 text-center" >
+        <h2>
+            Товар не доступен.
+        </h2>
+    </div>
+{% endif %}
+{%endblock%}

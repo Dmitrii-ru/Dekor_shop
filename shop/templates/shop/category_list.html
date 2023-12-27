@@ -1,0 +1,29 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+
+
+
+{%block context%}
+
+<link rel="stylesheet" href="{% static 'shop/css/list_items.css' %}">
+
+
+
+
+<div class="d-flex justify-content-center d-flex flex-wrap">
+
+    {% for category in categories %}
+            <div class="card m-2 " style="width: 18rem;">
+              <img src="/media/image_default/default.png" class="card-img-top card_img_effect" alt="..." style="border-bottom: 1px solid rgba(0,0,0,.125);">
+                <a href="{% url 'shop:groups' category.slug %}" class="d-flex align-items-center a_link_card" style="">
+                    <div class="card-body" style="">
+                      <p class="card-text  text-center" >{{ category.site_name }}</p>
+                    </div>
+                </a>
+            </div>
+    {% endfor %}
+
+</div>
+
+{%endblock%}

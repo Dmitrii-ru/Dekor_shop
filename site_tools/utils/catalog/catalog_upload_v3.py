@@ -10,6 +10,7 @@ from site_tools.utils.catalog.create_object import ObjectCreate
 from site_tools.utils.catalog.update_object import ObjectUpdate
 from site_tools.utils.catalog.report_create import create_report
 from site_tools.utils.catalog.constants import report_columns_dict, report_message, stop_list_product
+from site_tools.utils.error_logs.create_db_massege import create_message_db
 
 
 class TempCategoryUpdate(ObjectUpdate):
@@ -151,7 +152,6 @@ class CatalogUploader:
                     outline_level = int(schema_row.get('outlineLevel', 0))
                     row_number = int(schema_row.get('r')) - header - 2
                     row = excel_data_df.iloc[row_number]
-                    print(row)
                     if outline_level == 1:
                         category_object = self.models_dict[f'{Category}']['art_obj_dict'].get(
                             row['Номенклатура.Код'],
@@ -258,16 +258,18 @@ def transaction_upload_catalog():
     """
     catalog = None
     report = None
+
+
     with transaction.atomic():
         try:
             catalog = Catalog.objects.get(pk=1)
         except Exception as e:
-            catalog.status = f"Каталог не найден ->  {str(e)}"
-            catalog.save()
+            create_message_db(f'Каталог не обнаружен -> {str(e)}')
 
         try:
             report = CatalogUploader(catalog).temp_catalog_parser()
         except Exception as e:
+            create_message_db(f'Ошибка при обработки каталога -> {str(e)}')
             catalog.status = f'Ошибка при обработки каталога -> {str(e)}'
             catalog.save()
 
@@ -275,9 +277,10 @@ def transaction_upload_catalog():
     catalog.save()
 
     try:
+
         create_report(report)
     except Exception as e:
-        raise
+        create_message_db(f'Ошибка при попытке создать отчет -> {str(e)}')
 
     catalog.delete()
 

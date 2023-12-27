@@ -7,6 +7,10 @@ from .utils.catalog.get_header_catalog import get_header_catalog
 from django.utils import timezone
 
 
+def get_time_upload(data):
+    return timezone.localtime(data).strftime("%Y-%m-%d %H:%M:%S")
+
+
 # Create your models here.
 class SingletonModel(models.Model):
     """
@@ -45,12 +49,9 @@ class Catalog(SingletonModel):
         verbose_name = 'Каталог'
         verbose_name_plural = 'Каталог'
 
-    def get_time_upload(self):
-        return timezone.localtime(self.uploaded_at).strftime("%Y-%m-%d %H:%M:%S")
-
     def __str__(self):
         return f'Статус: {self.status} | Дата загрузки каталога: ' \
-               f'{self.get_time_upload()} '
+               f'{get_time_upload(self.uploaded_at)} '
 
     def save(self, *args, **kwargs):
         if not self.uploaded_at:
@@ -78,16 +79,16 @@ class ReportCatalog(models.Model):
         verbose_name = 'Отчет'
         verbose_name_plural = 'Отчет загрузки каталога'
 
-    def get_time_upload(self):
-        return timezone.localtime(self.uploaded_at).strftime("%Y-%m-%d %H:%M:%S")
-
     def __str__(self):
-        return f'Отчет загрузки каталога {self.get_time_upload()}'
-
-    @staticmethod
-    def get_datetime():
-        return timezone.localtime(timezone.now()).strftime("%Y-%m-%d %H:%M:%S")
+        return f'Отчет загрузки каталога {get_time_upload(self.uploaded_at)}'
 
     def save(self, *args, **kwargs):
-        print(self, 'RepostCatalog')
         super().save(*args, **kwargs)
+
+
+class ErrorMessage(models.Model):
+    message = models.TextField('Сообщение')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{get_time_upload(self.uploaded_at)} - {self.message[20:]}'

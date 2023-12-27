@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .forms import CatalogAdminForm, ReportCatalogAdminForm
-from .models import Catalog, ReportCatalog
+from .models import Catalog, ReportCatalog, ErrorMessage
 
 
 class CatalogAdmin(admin.ModelAdmin):
@@ -34,5 +34,11 @@ class ReportCatalogAdmin(admin.ModelAdmin):
         return False
 
 
+class ErrorMessageAdmin(admin.ModelAdmin):
+    model = ErrorMessage
+    readonly_fields = ('uploaded_at', 'message',)
+
+
 admin.site.register(Catalog, CatalogAdmin)
 admin.site.register(ReportCatalog, ReportCatalogAdmin)
+admin.site.register(ErrorMessage,ErrorMessageAdmin)

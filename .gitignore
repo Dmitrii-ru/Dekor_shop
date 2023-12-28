@@ -166,3 +166,5 @@ site_tools/my_test.py
 /shop/permission.py
 /shop/migrations
 /site_tools/migrations
+MY_TEST_DIR
+

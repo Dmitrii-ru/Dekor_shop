@@ -88,7 +88,7 @@ class ReportCatalog(models.Model):
 
 class ErrorMessage(models.Model):
     message = models.TextField('Сообщение')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateTimeField('Дата создания ', auto_now_add=True)
 
     def __str__(self):
         return f'{get_time_upload(self.uploaded_at)} - {self.message[20:]}'

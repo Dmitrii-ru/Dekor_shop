@@ -56,6 +56,8 @@ def create_report(report):
                     writer.sheets[model].set_column(idx, idx, max_len + 2)
 
         path_report = os.path.relpath(report_path, settings.DOCUMENT_ROOT)
-        ReportCatalog.objects.create(report=path_report)
+        r = ReportCatalog.objects.create(report=path_report, is_active_dump=True)
+        ReportCatalog.objects.filter(is_active_dump=True).exclude(id=r.id).update(is_active_dump=False)
+
     except Exception as e:
         pass

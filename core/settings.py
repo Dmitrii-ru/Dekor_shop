@@ -41,9 +41,6 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,7 +78,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-TEST_DATABASE_NAME = env('NAME_DB')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -91,10 +87,7 @@ DATABASES = {
         'HOST': env('HOST_DB'),
         'PORT': '',
     },
-
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -141,13 +134,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DOCUMENT_URL = '/site_document/'
 DOCUMENT_ROOT = os.path.join(BASE_DIR, 'site_document')
 
-
 ##### CELERY ####
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_DB_REUSE_MAX = 0
-
 
 LOGGING = {
     'version': 1,
@@ -186,4 +177,3 @@ CACHES = {
         }
     }
 }
-

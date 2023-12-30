@@ -74,10 +74,11 @@ class ReportCatalog(models.Model):
         storage=DocumentStorage(),
         upload_to='catalog_reports',
     )
+    is_active_dump = models.BooleanField('Наличие резервной копии каталога', default=True)
 
     class Meta:
         verbose_name = 'Отчет'
-        verbose_name_plural = 'Отчет загрузки каталога'
+        verbose_name_plural = 'Отчеты загрузки каталога'
 
     def __str__(self):
         return f'Отчет загрузки каталога {get_time_upload(self.uploaded_at)}'
@@ -86,9 +87,22 @@ class ReportCatalog(models.Model):
         super().save(*args, **kwargs)
 
 
+# DELETE
 class ErrorMessage(models.Model):
     message = models.TextField('Сообщение')
     uploaded_at = models.DateTimeField('Дата создания ', auto_now_add=True)
 
     def __str__(self):
         return f'{get_time_upload(self.uploaded_at)} - {self.message[20:]}'
+
+
+class ProcessesMessage(models.Model):
+    message = models.TextField('Сообщение')
+    uploaded_at = models.DateTimeField('Дата создания ', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'История событий сайта'
+
+    def __str__(self):
+        return f'{get_time_upload(self.uploaded_at)} - {self.message[:200]}'

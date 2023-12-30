@@ -6,12 +6,15 @@ from shop.models import Category, Group, Product
 from site_tools.models import Catalog
 import zipfile
 import xml.etree.ElementTree as ET
-from site_tools.utils.catalog.create_object import ObjectCreate
-from site_tools.utils.catalog.update_object import ObjectUpdate
+from site_tools.utils.catalog.object_create import ObjectCreate
+from site_tools.utils.catalog.object_update import ObjectUpdate
 from site_tools.utils.catalog.report_create import create_report
 from site_tools.utils.catalog.constants import report_columns_dict, report_message, stop_list_product
 from site_tools.utils.error_logs.create_db_massege import create_message_db
-
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import OperationalError
+from site_tools.management.commands.dump_catalog import dump_data_catalog
+from django.core.management import call_command
 
 class TempCategoryUpdate(ObjectUpdate):
     model_django = Category
@@ -259,16 +262,21 @@ def transaction_upload_catalog():
     catalog = None
     report = None
 
-
     with transaction.atomic():
+
         try:
             catalog = Catalog.objects.get(pk=1)
-        except Exception as e:
+        except ObjectDoesNotExist as e:
             create_message_db(f'Каталог не обнаружен -> {str(e)}')
+
+        Category.objects.select_for_update().all()
+        Group.objects.select_for_update().all()
+        Product.objects.select_for_update().all()
+        call_command('catalog_dump')
 
         try:
             report = CatalogUploader(catalog).temp_catalog_parser()
-        except Exception as e:
+        except OperationalError as e:
             create_message_db(f'Ошибка при обработки каталога -> {str(e)}')
             catalog.status = f'Ошибка при обработки каталога -> {str(e)}'
             catalog.save()
@@ -277,12 +285,11 @@ def transaction_upload_catalog():
     catalog.save()
 
     try:
-
         create_report(report)
     except Exception as e:
         create_message_db(f'Ошибка при попытке создать отчет -> {str(e)}')
-
     catalog.delete()
+    create_message_db("Каталог успешно обновлен и файл удален, подготовлен отчет и резервная копия.", notification=True)
 
 
 def transaction_upload_catalog_test(cat):

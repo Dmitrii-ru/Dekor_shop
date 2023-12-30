@@ -5,7 +5,7 @@ from django.db import models
 from PIL import Image
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
-from site_tools.utils.catalog.search import get_base_form_words
+from site_tools.utils.catalog.base_form_string import get_base_form_words
 from decimal import Decimal
 
 STOCK_CHOICES = (
@@ -82,12 +82,7 @@ class Group(models.Model):
         group = get_object_or_404(
             Group.objects.select_related(
                 'category'
-            ).only(
-                'category_slug'
-                'slug'
-            ),
-            pk=self.pk
-        )
+            ).only('category_slug','slug'), pk=self.pk)
 
         return reverse(
             'shop:products',
@@ -122,7 +117,7 @@ class Product(models.Model):
     )
     art = models.CharField("Номенклатура.Код", max_length=100, unique=True)
     slug = models.SlugField('Идентификатор в url адресе', blank=False, max_length=100, unique=True)
-    unit = models.CharField('Ед. изм.', max_length=20, blank=False, null=True)
+    unit = models.CharField('Ед. изм.', max_length=20, blank=False, null=False)
     price = models.DecimalField(
         'Цена ',
         max_digits=10,
@@ -131,7 +126,13 @@ class Product(models.Model):
         blank=False,
         null=False
     )
-    old_price = models.DecimalField('Старая цена', max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    old_price = models.DecimalField(
+        'Старая цена',
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        blank=True
+    )
     promotion = models.BooleanField('Участие в акции', default=False)
     stock = models.IntegerField('Наличие', choices=STOCK_CHOICES, blank=False, null=True, default=1)
     image = models.ImageField(
@@ -188,7 +189,7 @@ class Product(models.Model):
             Product.objects.select_related(
                 'group__category'
             ).only(
-                'slug'
+                'slug',
                 'group__slug',
                 'group__category__slug'
             ),

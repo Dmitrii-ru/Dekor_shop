@@ -104,6 +104,7 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ('image_preview',)
     search_fields = ['site_name__icontains']
 
+
     list_display = ['site_name', 'image_preview', 'art', 'group', 'is_active']
     fieldsets = (
         (None, {

@@ -1,5 +1,5 @@
-from site_tools.utils.catalog.base_validator import ValidateTempObject
-from site_tools.utils.catalog.search import get_base_form_words
+from site_tools.utils.catalog.object_base_validator import ValidateTempObject
+from site_tools.utils.catalog.base_form_string import get_base_form_words
 
 
 class ObjectCreate(ValidateTempObject):
@@ -29,7 +29,6 @@ class ObjectCreate(ValidateTempObject):
                             field_verb_name='site_name', message='not_unique', var=_site_name
                         )
                     )
-
 
     def clean_art(self):
         super(ObjectCreate, self).clean_art()

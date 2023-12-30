@@ -1,5 +1,5 @@
-from site_tools.utils.catalog.base_validator import ValidateTempObject
-from site_tools.utils.catalog.search import get_base_form_words
+from site_tools.utils.catalog.object_base_validator import ValidateTempObject
+from site_tools.utils.catalog.base_form_string import get_base_form_words
 
 
 class ObjectUpdate(ValidateTempObject):
@@ -9,7 +9,6 @@ class ObjectUpdate(ValidateTempObject):
         self.update_fields = []
         self.update_obj = kwargs.get('update_obj')
         self.is_active = self.update_obj.is_active
-
 
     def clean_name(self):
         super(ObjectUpdate, self).clean_name()
@@ -58,21 +57,26 @@ class ObjectUpdate(ValidateTempObject):
 
     def clean_price(self):
         super(ObjectUpdate, self).clean_price()
-        _price = self.price
-        old_price = float(self.update_obj.price)
-        if old_price != _price:
-            if old_price <= _price:
-                if self.update_obj.promo_group:
-                    self.update_obj.promo_group = None
-                    self.update_fields.append('promo_group')
-                    self.report.new_record(
-                        self.model_django._meta.verbose_name_plural,
-                        'promotion_false',
-                        2,
-                        self.update_obj
-                    )
+        new_price = float(self.price)
+        price = self.update_obj.price
+        old_price = self.update_obj.old_price
 
-            elif old_price < _price:
+        if price <= new_price:
+            if self.update_obj.promo_group:
+                self.update_obj.promo_group = None
+                self.update_fields.append('promo_group')
+                self.report.new_record(
+                    self.model_django._meta.verbose_name_plural,
+                    'promotion_false',
+                    2,
+                    self.update_obj
+                )
+            if old_price:
+                self.update_obj.old_price = 0
+                self.update_fields.append('old_price')
+
+        elif price > new_price:
+            if old_price and old_price < price:
                 self.update_obj.old_price = self.update_obj.price
                 self.update_fields.append('old_price')
                 self.report.new_record(
@@ -82,8 +86,8 @@ class ObjectUpdate(ValidateTempObject):
                     self.update_obj
                 )
 
-            self.update_obj.price = _price
-            self.update_fields.append('price')
+        self.update_obj.price = self.price
+        self.update_fields.append('price')
 
     def methods_clean(self):
         for attr_name in dir(self):

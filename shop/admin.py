@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from django.contrib import admin
 from django import forms
 from django.utils.html import mark_safe
-from .forms import AdminFormGroup, AdminFormProduct, AdminFormCategory
+from .forms import AdminFormGroup, AdminFormProduct, AdminFormCategory, AdminFormPromoProductGroup
 from decimal import Decimal
 
 
@@ -27,7 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
         }),
 
         ('Информация о товаре', {
-            'fields': ('name', 'site_name', 'image_preview', 'image', 'slug','art'),
+            'fields': ('name', 'site_name', 'image_preview', 'image', 'slug', 'art'),
         }),
 
         ('Архив', {
@@ -60,7 +60,7 @@ class GroupAdmin(admin.ModelAdmin):
             'description': 'Информационный текст в шапке формы',
         }),
         ('Информация о товаре', {
-            'fields': ('name', 'site_name', 'image_preview', 'image', 'slug','art'),
+            'fields': ('name', 'site_name', 'image_preview', 'image', 'slug', 'art'),
         }),
         ('Принадлежность к категории', {
             'fields': ('category',),
@@ -103,7 +103,6 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ImagesProductsShopInline]
     readonly_fields = ('image_preview',)
     search_fields = ['site_name__icontains']
-
 
     list_display = ['site_name', 'image_preview', 'art', 'group', 'is_active']
     fieldsets = (
@@ -169,15 +168,15 @@ class ProductInline(admin.TabularInline):
 
 
 class PromoProductGroupAdmin(admin.ModelAdmin):
+    form = AdminFormPromoProductGroup
     inlines = [ProductInline]
     exclude = ('products',)
+    readonly_fields = ['create_at']
+    list_display = ['name', 'create_at', 'end_date']
+    fields = ['name', 'create_at', 'end_date']  # Порядок отображения
 
 
 admin.site.register(PromoProductGroup, PromoProductGroupAdmin)
-
-
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Group, GroupAdmin)
-
-

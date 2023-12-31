@@ -82,7 +82,7 @@ class Group(models.Model):
         group = get_object_or_404(
             Group.objects.select_related(
                 'category'
-            ).only('category_slug','slug'), pk=self.pk)
+            ).only('category_slug', 'slug'), pk=self.pk)
 
         return reverse(
             'shop:products',
@@ -222,7 +222,7 @@ class ImagesProductsShop(models.Model):
 
 class PromoProductGroup(models.Model):
     name = models.CharField('Название акции', max_length=50, blank=False)
-    create_at = models.DateTimeField(auto_now_add=True)
+    create_at = models.DateTimeField('Дата создания', auto_now_add=True)
     end_date = models.DateTimeField('Дата окончания акции', blank=False)
 
     def __str__(self):
@@ -231,3 +231,5 @@ class PromoProductGroup(models.Model):
     class Meta:
         verbose_name = 'Акция'
         verbose_name_plural = 'Акции'
+
+#

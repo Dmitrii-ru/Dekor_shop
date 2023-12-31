@@ -167,4 +167,4 @@ site_tools/my_test.py
 /shop/migrations
 /site_tools/migrations
 MY_TEST_DIR
-
+/site_tools/utils/catalog/dump_catalog/dump.json

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Group, Category
+from .models import Product, Group, Category, PromoProductGroup
 from django.core.exceptions import ValidationError
 
 
@@ -18,13 +18,14 @@ class AdminFormProduct(forms.ModelForm):
         return group
 
     def clean_old_price(self):
+        model_meta = self.Meta.model._meta
         price = self.cleaned_data.get('price')
         old_price = self.cleaned_data.get('old_price')
         if old_price and price:
             if old_price <= price:
-                raise ValidationError(f"Значение поля {Product._meta.get_field('old_price').verbose_name} "
-                                      f"может быть пустым или больше чем поле "
-                                      f"{Product._meta.get_field('price').verbose_name}")
+                raise ValidationError(f"Значение поля {model_meta.get_field('old_price').verbose_name} "
+                                      f"не может быть больше чем поле "
+                                      f"{model_meta.get_field('price').verbose_name}")
 
         return old_price
 
@@ -44,4 +45,11 @@ class AdminFormGroup(forms.ModelForm):
 class AdminFormCategory(forms.ModelForm):
     class Meta:
         model = Category
+        fields = '__all__'
+
+
+class AdminFormPromoProductGroup(forms.ModelForm):
+
+    class Meta:
+        model = PromoProductGroup
         fields = '__all__'

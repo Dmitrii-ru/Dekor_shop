@@ -1,8 +1,6 @@
 from django.db import models
-
-from .utils.catalog.constants import create_status_catalog
-from .utils.custom_storage import DocumentStorage
-
+from .utils.constants import create_status_catalog
+from .utils.storages.document_storage import DocumentStorage
 from .utils.catalog.get_header_catalog import get_header_catalog
 from django.utils import timezone
 
@@ -85,15 +83,6 @@ class ReportCatalog(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-
-# DELETE
-class ErrorMessage(models.Model):
-    message = models.TextField('Сообщение')
-    uploaded_at = models.DateTimeField('Дата создания ', auto_now_add=True)
-
-    def __str__(self):
-        return f'{get_time_upload(self.uploaded_at)} - {self.message[20:]}'
 
 
 class ProcessesMessage(models.Model):

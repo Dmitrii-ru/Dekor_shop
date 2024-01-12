@@ -1,6 +1,6 @@
 import openpyxl
 from django.core.exceptions import ValidationError
-from site_tools.utils.catalog.constants import const_columns
+from site_tools.utils.constants import const_columns
 
 
 def get_header_catalog(catalog):

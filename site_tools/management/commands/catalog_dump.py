@@ -1,13 +1,12 @@
 import os
 from django.core.management import call_command
 from site_tools.utils.catalog.dump_catalog.catalog_base_commend import CustomCatalogBaseCommand
-from site_tools.utils.error_logs.create_db_massege import create_message_db
+from site_tools.utils.messages.create_db_massege import create_message_db
 
 
 class Command(CustomCatalogBaseCommand):
 
-    help = 'Dump\
-    Category, Group, Product'
+    help = 'Dump Category, Group, Product'
 
     def dump_data_catalog(self):
         path = os.path.join(self.get_path_dump_dir(), self.dump_file_name)

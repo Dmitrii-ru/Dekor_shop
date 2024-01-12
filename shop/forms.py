@@ -17,6 +17,7 @@ class AdminFormProduct(forms.ModelForm):
             raise ValidationError(f'Группа: "{group}" не доступна (В архиве)')
         return group
 
+
     def clean_old_price(self):
         model_meta = self.Meta.model._meta
         price = self.cleaned_data.get('price')

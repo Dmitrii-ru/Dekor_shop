@@ -69,10 +69,7 @@ class ObjectCreate(ValidateTempObject):
         kwargs = {field: getattr(self, field) for field in model_fields if hasattr(self, field)}
         obj = self.model_django(**kwargs)
         self.report.new_record(
-            self.model_django._meta.verbose_name_plural,
-            'new',
-            4,
-            self
+            self.model_django._meta.verbose_name_plural, 'new', 4, self
         )
         self.models_dict['art_list'].append(obj.art)
 

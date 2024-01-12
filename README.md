@@ -25,7 +25,7 @@ ___
   * redis-server --daemonize yes
 
 ### Postgres
-  * pip install postgres==4.0
+  * pip install postgres==14.10 
   * sudo -u postgres psql
     * CREATE DATABASE shop;
     * CREATE USER shop_user WITH PASSWORD 'shop_user_password';
@@ -34,6 +34,7 @@ ___
     * ALTER ROLE shop_user SET timezone TO 'UTC';
     * GRANT ALL PRIVILEGES ON DATABASE shop TO shop_user;
     * \q
+  * sudo --login -u postgres psql
 
 ### ENV
 - Создать файл .env в корне 

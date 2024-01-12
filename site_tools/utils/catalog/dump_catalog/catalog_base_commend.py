@@ -1,5 +1,4 @@
 import os
-
 from django.core.management.base import BaseCommand
 from django.apps import apps
 
@@ -10,7 +9,6 @@ class CustomCatalogBaseCommand(BaseCommand):
     Category, Group, Product
     """
     dump_file_name = 'dump.json'
-
     @staticmethod
     def get_path_dump_dir():
         """

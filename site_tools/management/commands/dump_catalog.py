@@ -4,7 +4,7 @@ from django.apps import apps
 from django.db import transaction
 
 from shop.models import Category, Group, Product
-from site_tools.utils.error_logs.create_db_massege import create_message_db
+from site_tools.utils.messages.create_db_massege import create_message_db
 
 dump_file_name = 'dump.json'
 

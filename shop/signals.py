@@ -1,6 +1,9 @@
-from .models import Category, Group, Product
-from django.db.models.signals import pre_save
+from .models import Category, Group, Product, PromoProductGroup
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from celery import Celery
+from .tasks import create_promo_end_date_task
+from celery.result import AsyncResult
 
 
 @receiver(pre_save, sender=Category)
@@ -15,3 +18,44 @@ def update_child_groups_is_active(sender, instance, **kwargs):
     if not instance.is_active:
         instance.product.all().update(is_active=False)
 
+
+# celery -A core worker -B -Q shop
+# celery -A core inspect scheduled
+@receiver(post_save, sender=PromoProductGroup)
+def promo_create_update(sender, instance, **kwargs):
+    task_name = f'{PromoProductGroup._meta}_scheduled_{instance.id}'
+    result = AsyncResult(task_name)
+    result.revoke(terminate=True)
+    create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date, task_id=task_name)
+
+
+
+
+    # try:
+    #     result = AsyncResult(task_name)
+    #     instance_end_date = instance.end_date.replace(tzinfo=None)
+    #     print(result.__dict__)
+    #     print('try')
+    # except:
+    #     create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date, task_id=task_name)
+    #     print('except')
+
+# @receiver(pre_save, sender=PromoProductGroup)
+# def promo_create_update(sender, instance, **kwargs):
+#     if instance._state.adding:
+#         # create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date)
+#         print('new')
+#
+#     if not instance._state.adding:
+#         old = PromoProductGroup.objects.get(id=instance.id)
+#
+#         print(old.end_date)
+#         print(instance.end_date)
+# if instance.id:
+#     print(instance.id,'instance.id')
+#     q = Product.objects.get(id=instance.id)
+#     print(q.end_date)
+#     print(instance.end_date)
+# else:
+#     print(instance.end_date)
+#     print("else")

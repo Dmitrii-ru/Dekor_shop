@@ -4,7 +4,7 @@ import pandas as pd
 import openpyxl
 from django.core.exceptions import ValidationError
 from core import settings
-from site_tools.utils.catalog.constants import const_columns
+
 from django.utils import timezone
 from site_tools.models import ReportCatalog
 from datetime import datetime

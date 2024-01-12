@@ -6,4 +6,5 @@ def create_message_db(message, notification=False):
         message_db = f'Ошибка программы: {message}'
     else:
         message_db = f'Уведомление: {message}'
+
     ProcessesMessage.objects.create(message=message_db)

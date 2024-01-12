@@ -133,7 +133,7 @@ class Product(models.Model):
         default=Decimal('0.00'),
         blank=True
     )
-    promotion = models.BooleanField('Участие в акции', default=False)
+
     stock = models.IntegerField('Наличие', choices=STOCK_CHOICES, blank=False, null=True, default=1)
     image = models.ImageField(
         'Фото в карточку',
@@ -227,6 +227,8 @@ class PromoProductGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+
 
     class Meta:
         verbose_name = 'Акция'

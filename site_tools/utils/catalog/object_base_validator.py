@@ -1,7 +1,8 @@
 import re
 from pytils.translit import slugify
 
-from site_tools.utils.catalog.constants import validate_message_error
+from site_tools.utils.constants import validate_upload_catalog
+from site_tools.utils.messages.create_db_massege import create_message_db
 
 
 class ValidateTempObject:
@@ -40,19 +41,19 @@ class ValidateTempObject:
             self.model_stock_field = self.model_django._meta.get_field('stock')
 
     def create_error_message(self, field_verb_name, message, var=None):
-        message = validate_message_error.get(message, '')
+        message = validate_upload_catalog.get(message, '')
         field_ver_name = self.model_django._meta.get_field(field_verb_name).verbose_name
 
         if var:
             var = ' ' + var
         else:
             var = ''
-        mas = f'Ошибка: '\
-              f'Данные к каталоге: {self.plural} -> ' \
+        mess = f''\
+              f'{self.plural} -> ' \
               f'{self.model_art_field.verbose_name} = {self.art} -> ' \
               f'{field_ver_name} -> ' \
               f'{message}{var}.'
-        return mas
+        return mess
 
     def clean_art(self):
         if not self.art:

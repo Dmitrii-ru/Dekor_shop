@@ -35,7 +35,7 @@ report_message = {
     5: 'Переведен в архив'
 }
 
-validate_message_error = {
+validate_upload_catalog = {
     'pure': 'Не может быть пустым',
     '>max_length': 'Длинна должна быть меньше',
     'not_digit': 'Не возможно преобразовать в число',

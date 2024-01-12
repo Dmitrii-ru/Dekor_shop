@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .forms import CatalogAdminForm, ReportCatalogAdminForm
 from .models import Catalog, ReportCatalog, ProcessesMessage
+from .permission import load_dump_catalog_parm
 
 
 class CatalogAdmin(admin.ModelAdmin):
@@ -37,7 +38,7 @@ class ReportCatalogAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
         odj = self.get_object(request, object_id)
-        if odj.is_active_dump and request.user.is_superuser:
+        if odj.is_active_dump and load_dump_catalog_parm(request.user):
             extra_context['show_load_data_button'] = True
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
@@ -61,6 +62,7 @@ class ProcessesMessageAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return super().get_actions(request)
         return None
+
 
 admin.site.register(Catalog, CatalogAdmin)
 admin.site.register(ReportCatalog, ReportCatalogAdmin)

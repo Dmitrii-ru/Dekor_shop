@@ -45,21 +45,21 @@ class ValidateTempObject:
         field_ver_name = self.model_django._meta.get_field(field_verb_name).verbose_name
 
         if var:
-            var = ' ' + var
+            var = f' ({var})'
         else:
             var = ''
-        mess = f''\
-              f'{self.plural} -> ' \
-              f'{self.model_art_field.verbose_name} = {self.art} -> ' \
-              f'{field_ver_name} -> ' \
-              f'{message}{var}.'
+        mess = f'' \
+               f'{self.plural} -> ' \
+               f'{self.model_art_field.verbose_name} = {self.art} -> ' \
+               f'Поле {field_ver_name} ' \
+               f'{message}{var}.'
         return mess
 
     def clean_art(self):
         if not self.art:
             raise ValueError(
-                f'Локация ошибки: {self.plural} '
-                f'Ошибка: Проверьте наличие артикула.'
+                f'{self.plural} -> '
+                f'Проверьте наличие артикула.'
             )
 
     def clean_name(self):
@@ -106,8 +106,11 @@ class ValidateTempObject:
             raise ValueError(self.create_error_message(field_verb_name='price', message='not_digit'))
 
     def clean_slug(self):
-        if not self.slug:
-            setattr(self, 'slug', slugify(self.name[30:] + self.art))
+        try:
+            if not self.slug:
+                setattr(self, 'slug', slugify(self.name[30:] + str(self.art)))
+        except ValueError as e:
+            raise ValueError(self.create_error_message(field_verb_name='slug', message='slug', var=e))
 
     def clean_old_price(self):
         pass

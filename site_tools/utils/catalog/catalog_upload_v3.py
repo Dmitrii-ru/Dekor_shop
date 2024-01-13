@@ -228,6 +228,8 @@ class CatalogUploader:
             if objs:
                 objs.update(is_active=False)
                 for obj in objs:
+                    print(model.verbose_name)
+                    print(model.verbose_name_plural)
                     self.report.new_record(model.verbose_name_plural, 'is_actual_false', 5, obj)
 
     def bulk_update_create_objects(self):
@@ -237,10 +239,9 @@ class CatalogUploader:
 
         for model in self.list_models:
             self.search_no_actual_objects(model)
-        for model in self.list_models:
-            to_create = self.models_dict[f'{model}']['to_update']
-            if to_create:
-                for fields_set, values in to_create.items():
+            to_update = self.models_dict[f'{model}']['to_update']
+            if to_update:
+                for fields_set, values in to_update.items():
                     model.objects.bulk_update(
                         values,
                         fields=list(fields_set),
@@ -260,42 +261,50 @@ def transaction_upload_catalog():
     """
     catalog = None
     report = None
+    success_flag = True
     error_message = None
 
     with transaction.atomic():
         try:
             catalog = Catalog.objects.get(pk=1)
         except ObjectDoesNotExist as e:
-            error_message = f'Каталог не обнаружен -> {str(e)}'
+            error_message = f'Каталог не обнаружен. {str(e)}'
             create_message_db(error_message)
+            success_flag = False
 
-        Category.objects.select_for_update().all()
-        Group.objects.select_for_update().all()
-        Product.objects.select_for_update().all()
         call_command('catalog_dump')
+
         try:
+            sp = transaction.savepoint()
+            Category.objects.select_for_update().all()
+            Group.objects.select_for_update().all()
+            Product.objects.select_for_update().all()
             report = CatalogUploader(catalog).temp_catalog_parser()
         except ValueError as e:
-            error_message = f'Каталог не загружен. Каталог -> {str(e)}'
+            transaction.savepoint_rollback(sp)
+            error_message = f'Каталог не загружен.{str(e)}'
             create_message_db(error_message)
+            success_flag = False
 
-    try:
-        catalog.status = 'Готовлю отчет'
-        catalog.save()
-        create_report(report)
-    except Exception as e:
-        create_message_db(f'Отчет по каталогу не создан. Отчет -> {str(e)}')
+    if success_flag:
+        print('success_flag')
+        try:
+            catalog.status = 'Готовлю отчет'
+            catalog.save()
+            create_report(report)
 
-    if error_message:
-        create_message_db(error_message)
+        except Exception as e:
+            create_message_db(f'Отчет по каталогу не создан.{str(e)}')
+
+        finally:
+            catalog.delete()
+            create_message_db(
+                "Каталог успешно обновлен и файл удален, подготовлен отчет и резервная копия.",
+                notification=True
+            )
+    else:
         catalog.status = error_message
         catalog.save()
-    else:
-        catalog.delete()
-        create_message_db(
-            "Каталог успешно обновлен и файл удален, подготовлен отчет и резервная копия.",
-            notification=True
-        )
 
 
 def transaction_upload_catalog_test(cat):

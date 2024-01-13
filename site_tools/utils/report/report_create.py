@@ -60,4 +60,5 @@ def create_report(report):
         ReportCatalog.objects.filter(is_active_dump=True).exclude(id=r.id).update(is_active_dump=False)
 
     except Exception as e:
-        pass
+        print('create_report')
+        print(e)

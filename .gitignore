@@ -16,7 +16,7 @@ venv.bak/
 ###
 poetry.lock
 pyproject.toml
-
+.gitignore
 media/image/
 media/image_card/
 site_document/

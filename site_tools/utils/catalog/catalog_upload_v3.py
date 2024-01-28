@@ -155,14 +155,12 @@ class CatalogUploader:
                     row_number = int(schema_row.get('r')) - header - 2
                     row = excel_data_df.iloc[row_number]
                     if outline_level == 1:
-                        category_object = self.models_dict[f'{Category}']['art_obj_dict'].get(
-                            row['Номенклатура.Код'],
-                            None
-                        )
+                        art = str(row['Номенклатура.Код'])
+                        category_object = self.models_dict[f'{Category}']['art_obj_dict'].get(art, None)
                         temp_category_dict = dict(
                             name=row['Номенклатура'],
                             site_name=row['Номенклатура'],
-                            art=row['Номенклатура.Код'],
+                            art=art,
                             models_dict=self.models_dict[f'{Category}'],
                             report=self.report,
                             update_obj=category_object
@@ -174,12 +172,13 @@ class CatalogUploader:
                             category = TempCategoryCreate(**temp_category_dict).create()
 
                     elif outline_level == 2:
-                        group_object = self.models_dict[f'{Group}']['art_obj_dict'].get(row['Номенклатура.Код'], None)
+                        art = str(row['Номенклатура.Код'])
+                        group_object = self.models_dict[f'{Group}']['art_obj_dict'].get(art, None)
 
                         temp_group_dict = dict(
                             name=row['Номенклатура'],
                             site_name=row['Номенклатура'],
-                            art=row['Номенклатура.Код'],
+                            art=art,
                             category=category,
                             models_dict=self.models_dict[f'{Group}'],
                             report=self.report,
@@ -192,15 +191,15 @@ class CatalogUploader:
                             group = TempGroupCreate(**temp_group_dict).create()
 
                     elif outline_level == 3:
+
                         if not any(row['Номенклатура'].strip().startswith(stop) for stop in stop_list_product):
-                            product_object = self.models_dict[f'{Product}']['art_obj_dict'].get(
-                                row['Номенклатура.Код'],
-                                None
-                            )
+                            art = str(row['Номенклатура.Код'])
+                            product_object = self.models_dict[f'{Product}']['art_obj_dict'].get(art, None)
+
                             temp_product_dict = dict(
                                 name=row['Номенклатура'],
                                 site_name=row['Наименование полное'],
-                                art=row['Номенклатура.Код'],
+                                art=art,
                                 price=row["Розничная цена"],
                                 unit=row['Ед. изм.'],
                                 stock=row['Остаток на складе'],
@@ -209,9 +208,12 @@ class CatalogUploader:
                                 report=self.report,
                                 update_obj=product_object
                             )
+
                             if product_object:
                                 TempProductUpdate(**temp_product_dict).update()
                             else:
+                                print(row['Номенклатура.Код'], len(str(row['Номенклатура.Код'])))
+                                print(product_object)
                                 TempProductCreate(**temp_product_dict).create()
         self.bulk_update_create_objects()
         return self.report
@@ -223,14 +225,13 @@ class CatalogUploader:
         """
 
         list_objects = self.models_dict[f'{model}']['art_list']
+
         if list_objects:
             objs = model.objects.all().exclude(art__in=list_objects)
             if objs:
                 objs.update(is_active=False)
                 for obj in objs:
-                    print(model.verbose_name)
-                    print(model.verbose_name_plural)
-                    self.report.new_record(model.verbose_name_plural, 'is_actual_false', 5, obj)
+                    self.report.new_record(model._meta.verbose_name_plural, 'is_actual_false', 5, obj)
 
     def bulk_update_create_objects(self):
         """
@@ -287,7 +288,6 @@ def transaction_upload_catalog():
             success_flag = False
 
     if success_flag:
-        print('success_flag')
         try:
             catalog.status = 'Готовлю отчет'
             catalog.save()
@@ -305,9 +305,3 @@ def transaction_upload_catalog():
     else:
         catalog.status = error_message
         catalog.save()
-
-
-def transaction_upload_catalog_test(cat):
-    c = Catalog.objects.filter(id=1).first()
-    report = CatalogUploader(c).temp_catalog_parser()
-    create_report(report)

@@ -152,7 +152,7 @@ class Product(models.Model):
     is_active = models.BooleanField('Доступен', default=True)
 
     class Meta:
-        verbose_name = 'Карточку товара'
+        verbose_name = 'Карточка товара'
         verbose_name_plural = 'Карточки товаров'
         indexes = [GinIndex(fields=["sv_site_name"])]
 

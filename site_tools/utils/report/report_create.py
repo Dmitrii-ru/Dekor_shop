@@ -4,7 +4,7 @@ import pandas as pd
 import openpyxl
 from django.core.exceptions import ValidationError
 from core import settings
-
+import xlsxwriter
 from django.utils import timezone
 from site_tools.models import ReportCatalog
 from datetime import datetime
@@ -60,5 +60,5 @@ def create_report(report):
         ReportCatalog.objects.filter(is_active_dump=True).exclude(id=r.id).update(is_active_dump=False)
 
     except Exception as e:
-        print('create_report')
-        print(e)
+        raise Exception(e)
+

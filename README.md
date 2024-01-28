@@ -1,23 +1,36 @@
 # Магазин:
 
-___
+## Технологии:
+-  Python, Django, Postgres, Bootstrap, CSS, Celery, Redis, Pandas.
+## Web интерфейс:
+- Bootstrap ,CSS.
+## Ссылки:
+- https://github.com/Dmitrii-ru/Dekor_shop
+## Реализованные решения:
+- Асинхронные фоновые задачи, кастомизация административной панели, ручное кэширование, оптимизация запросов, 
+фильтрация и ранжирование по релевантности запросу, парсинг macros excel каталога, предварительное валидирование данных каталога, 
+резервное копирование части базы данных.
 
-# APPS :
+## Приложения
+### Магазин
+- Прилавок продуктов (Категории, группы, продукты)
+- Поисковая система
+  -  Фильтрация и ранжирование по релевантности запроса, индексация полей, подготовка базовых форм слов
+- Кастомизация административной палеи
+  - Разграничение прав доступа
+  - fieldsets, изображения, вычисляемые поля
 
-### - `core` Настройки сайта
-- Настройки сайта и сторонних библиотек. 
-
-___
-
-### - `shop` Прилавок магазина
-- Предоставление информации об ассортименте магазина. 
-
-___
-
-### - `site_tools` Внутренние инструменты и сервисы сайта
-- Загрузка каталога.
-##### подробнее : `/site_tools/readme_app.md`
-___
+### Инструменты сайта
+- Загрузка каталога, предварительное валидирование данных каталога
+  - Транзакционная загрузка каталога
+  - Парсинг macros excel, получение уровней вложенности
+  - Динамический механизм валидирования на основе ООП данных
+    - Базовый класс, классы для методов (Update, Create), класс моделей 
+  - Информирование пользователя какое поле у объекта не прошло валидацию или на какой этапе произошла ошибка
+  - Подготовка отчета о загрузке для каждой модели в excel формате
+  - Подготовка базовых форм слов для SearchVector
+  - Динамическое групповое обновление полей объектов
+  - Оптимизация заботы с базой данных 
 
 ## Команды для запуска 
 ### Redis
@@ -25,7 +38,7 @@ ___
   * redis-server --daemonize yes
 
 ### Postgres
-  * pip install postgres==14.10 
+  * pip install postgres
   * sudo -u postgres psql
     * CREATE DATABASE shop;
     * CREATE USER shop_user WITH PASSWORD 'shop_user_password';
@@ -36,6 +49,7 @@ ___
     * \q
   * sudo --login -u postgres psql
 
+
 ### ENV
 - Создать файл .env в корне 
     * SECRET_KEY='input_key'
@@ -45,9 +59,9 @@ ___
     * HOST_DB='localhost'
 
 ### Подготовка Django
-   * python3 -m venv venv 
-   * source venv/bin/activate
-   * pip install -r requirements.txt
+   * poetry init
+   * poetry add $(cat requirements.txt)
+   * poetry shell
    * python3 manage.py makemigrations
    * python3 manage.py migrate
    * python3 manage.py createsuperuser
@@ -56,6 +70,7 @@ ___
   * python3 manage.py runserver
 
 ### Запуск Celery worker
+  * celery -A core worker -B -Q shop
+  * celery -A core worker -B -Q site_tools
   * celery -A core worker -B
-
-
+    

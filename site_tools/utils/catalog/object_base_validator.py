@@ -42,16 +42,16 @@ class ValidateTempObject:
 
     def create_error_message(self, field_verb_name, message, var=None):
         message = validate_upload_catalog.get(message, '')
-        field_ver_name = self.model_django._meta.get_field(field_verb_name).verbose_name
+        field_verb_name = self.model_django._meta.get_field(field_verb_name).verbose_name
 
         if var:
-            var = f' ({var})'
+            var = f' {var}'
         else:
             var = ''
         mess = f'' \
                f'{self.plural} -> ' \
                f'{self.model_art_field.verbose_name} = {self.art} -> ' \
-               f'Поле {field_ver_name} ' \
+               f'Поле: "{field_verb_name}" ' \
                f'{message}{var}.'
         return mess
 

@@ -19,8 +19,6 @@ def update_child_groups_is_active(sender, instance, **kwargs):
         instance.product.all().update(is_active=False)
 
 
-# celery -A core worker -B -Q shop
-# celery -A core inspect scheduled
 @receiver(post_save, sender=PromoProductGroup)
 def promo_create_update(sender, instance, **kwargs):
     task_name = f'{PromoProductGroup._meta}_scheduled_{instance.id}'
@@ -28,34 +26,3 @@ def promo_create_update(sender, instance, **kwargs):
     result.revoke(terminate=True)
     create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date, task_id=task_name)
 
-
-
-
-    # try:
-    #     result = AsyncResult(task_name)
-    #     instance_end_date = instance.end_date.replace(tzinfo=None)
-    #     print(result.__dict__)
-    #     print('try')
-    # except:
-    #     create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date, task_id=task_name)
-    #     print('except')
-
-# @receiver(pre_save, sender=PromoProductGroup)
-# def promo_create_update(sender, instance, **kwargs):
-#     if instance._state.adding:
-#         # create_promo_end_date_task.apply_async((instance.id,), eta=instance.end_date)
-#         print('new')
-#
-#     if not instance._state.adding:
-#         old = PromoProductGroup.objects.get(id=instance.id)
-#
-#         print(old.end_date)
-#         print(instance.end_date)
-# if instance.id:
-#     print(instance.id,'instance.id')
-#     q = Product.objects.get(id=instance.id)
-#     print(q.end_date)
-#     print(instance.end_date)
-# else:
-#     print(instance.end_date)
-#     print("else")
